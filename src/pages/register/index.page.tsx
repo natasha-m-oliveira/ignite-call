@@ -34,12 +34,16 @@ export default function Register() {
     resolver: zodResolver(registerFormSchema),
   })
 
+  const router = useRouter()
+
   async function handleRegister(data: RegisterFormData) {
     try {
       await api.post('/users', {
         name: data.name,
         username: data.username,
       })
+
+      await router.push('/register/connect-calender')
     } catch (err) {
       if (err instanceof AxiosError && err.response?.data.message)
         return alert(err.response?.data?.message)
@@ -47,8 +51,6 @@ export default function Register() {
       console.error(err)
     }
   }
-
-  const router = useRouter()
 
   useEffect(() => {
     if (router.query?.username)

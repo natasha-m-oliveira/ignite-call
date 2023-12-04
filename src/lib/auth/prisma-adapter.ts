@@ -11,9 +11,7 @@ export function PrismaAdapter(
     async createUser(user) {
       const { '@ignitecall:userId': userIdOnCookies } = parseCookies({ req })
 
-      if (!userIdOnCookies) {
-        throw new Error('User ID not found on cookies.')
-      }
+      if (!userIdOnCookies) throw new Error('User ID not found on cookies.')
 
       const prismaUser = await prisma.user.update({
         where: {
@@ -47,9 +45,7 @@ export function PrismaAdapter(
         },
       })
 
-      if (!user) {
-        return null
-      }
+      if (!user) return null
 
       return {
         id: user.id,
@@ -67,9 +63,7 @@ export function PrismaAdapter(
         },
       })
 
-      if (!user) {
-        return null
-      }
+      if (!user) return null
 
       return {
         id: user.id,
@@ -93,9 +87,7 @@ export function PrismaAdapter(
         },
       })
 
-      if (!account) {
-        return null
-      }
+      if (!account) return null
 
       const { user } = account
 
@@ -175,9 +167,7 @@ export function PrismaAdapter(
         },
       })
 
-      if (!prismaSession) {
-        return null
-      }
+      if (!prismaSession) return null
 
       const { user, ...session } = prismaSession
 

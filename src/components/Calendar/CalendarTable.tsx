@@ -1,7 +1,7 @@
 import { CaretLeft, CaretRight } from 'phosphor-react'
 import {
   CalendarBody,
-  Day,
+  CalendarDay,
   CalendarHeader,
   CalendarActions,
   CalendarTitle,
@@ -54,19 +54,17 @@ export function CalendarTable(props: CalendarTableProps) {
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td>
-              <Day disabled>1</Day>
-            </td>
-            <td>
-              <Day>2</Day>
-            </td>
-          </tr>
+          {calendarWeeks.map(({ week, days }) => (
+            <tr key={week}>
+              {days.map(({ date, disabled }) => (
+                <td key={date.toString()}>
+                  <CalendarDay disabled={disabled}>
+                    {date.get('date')}
+                  </CalendarDay>
+                </td>
+              ))}
+            </tr>
+          ))}
         </tbody>
       </CalendarBody>
     </CalendarContainer>

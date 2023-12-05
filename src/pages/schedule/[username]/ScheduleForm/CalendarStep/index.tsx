@@ -2,7 +2,7 @@ import { Calendar } from '@/components/Calendar'
 
 export function CalendarStep() {
   return (
-    <Calendar.Root isTimePickerOpen>
+    <Calendar.Root>
       <Calendar.Table />
 
       <Calendar.TimePicker>

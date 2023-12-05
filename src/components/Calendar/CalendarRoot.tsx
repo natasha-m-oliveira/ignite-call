@@ -1,20 +1,16 @@
-import { ReactNode, createContext } from 'react'
+import { ReactNode } from 'react'
 import { Container } from './CalendarRoot.styles'
+import { CalendarContextProvider, useCalendarContext } from './CalendarContext'
 
 interface CalendarRootProps {
   children: ReactNode
-  isTimePickerOpen?: boolean
 }
 
-const CalendarContext = createContext(null)
-
-export function CalendarRoot({
-  children,
-  isTimePickerOpen = false,
-}: CalendarRootProps) {
+export function CalendarRoot({ children }: CalendarRootProps) {
+  const { isDateSelected } = useCalendarContext()
   return (
-    <CalendarContext.Provider value={null}>
-      <Container isTimePickerOpen={isTimePickerOpen}>{children}</Container>
-    </CalendarContext.Provider>
+    <CalendarContextProvider>
+      <Container isTimePickerOpen={isDateSelected}>{children}</Container>
+    </CalendarContextProvider>
   )
 }

@@ -1,12 +1,11 @@
-import { ReactNode } from 'react'
+import { ButtonHTMLAttributes } from 'react'
 import { TimePickerItem } from './CalendarTimePickItem.styles'
 
-interface CalendarTimePickerItemProps {
-  children: ReactNode
-}
+type CalendarTimePickerItemProps = ButtonHTMLAttributes<HTMLButtonElement>
 
 export function CalendarTimePickerItem({
   children,
+  ...rest
 }: CalendarTimePickerItemProps) {
-  return <TimePickerItem>{children}</TimePickerItem>
+  return <TimePickerItem {...rest}>{children}</TimePickerItem>
 }

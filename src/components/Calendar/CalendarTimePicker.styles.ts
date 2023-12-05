@@ -13,4 +13,7 @@ export const TimePicker = styled('div', {
     right: 0,
     width: 280,
   },
+  '&[data-state="close"]': {
+    display: 'none',
+  },
 })

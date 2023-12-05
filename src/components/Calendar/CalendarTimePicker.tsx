@@ -11,7 +11,7 @@ export function CalendarTimePicker({ children }: CalendarTimePickerProps) {
 
   return (
     <TimePicker data-state={isDateSelected ? 'open' : 'closed'}>
-      {isDateSelected && children}
+      {children}
     </TimePicker>
   )
 }

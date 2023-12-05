@@ -7,19 +7,16 @@ export const Container = styled(Box, {
   maxWidth: '100%',
   position: 'relative',
 
-  variants: {
-    isTimePickerOpen: {
-      true: {
-        gridTemplateColumns: '1fr 280px',
+  '&:has([data-state="open"])': {
+    gridTemplateColumns: '1fr 280px',
 
-        '@media(max-width: 900px)': {
-          gridTemplateColumns: '1fr',
-        },
-      },
-      false: {
-        maxWidth: 540,
-        gridTemplateColumns: '1fr',
-      },
+    '@media(max-width: 900px)': {
+      gridTemplateColumns: '1fr',
     },
+  },
+
+  '&:has([data-state="closed"])': {
+    maxWidth: 540,
+    gridTemplateColumns: '1fr',
   },
 })

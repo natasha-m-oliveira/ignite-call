@@ -47,7 +47,10 @@ export const useCalendarWeeks = (date: Dayjs) => {
     const daysInMonthArray = Array.from({ length: date.daysInMonth() }).map(
       (_, i) => ({
         date: date.set('date', i + 1),
-        disabled: false,
+        disabled: date
+          .set('date', i + 1)
+          .endOf('day')
+          .isBefore(new Date()),
       }),
     )
 
@@ -114,6 +117,15 @@ export const useCalendarContext = () => {
     setCurrentDate(nextMonth)
   }
 
+  function handleSelectedDate(
+    date: Date | null,
+    callback?: (date: Date | null) => void,
+  ) {
+    setSelectedDate(date)
+
+    if (callback) callback(date)
+  }
+
   return {
     currentDate,
     currentMonth,
@@ -122,5 +134,6 @@ export const useCalendarContext = () => {
     isDateSelected,
     handlePreviousMonth,
     handleNextMonth,
+    handleSelectedDate,
   }
 }

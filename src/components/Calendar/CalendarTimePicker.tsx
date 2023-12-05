@@ -9,7 +9,9 @@ interface CalendarTimePickerProps {
 export function CalendarTimePicker({ children }: CalendarTimePickerProps) {
   const { isDateSelected } = useCalendarContext()
 
-  if (!isDateSelected) return <></>
-
-  return <TimePicker>{children}</TimePicker>
+  return (
+    <TimePicker data-state={isDateSelected ? 'open' : 'closed'}>
+      {isDateSelected && children}
+    </TimePicker>
+  )
 }

@@ -12,21 +12,22 @@ import { useCalendarContext } from './CalendarContext'
 
 interface CalendarTableProps {
   selectedDate?: Date | null
-  onDateSelected?: (date: Date) => void
+  onDateSelected?: (date: Date | null) => void
 }
 
 export function CalendarTable(props: CalendarTableProps) {
+  const { selectedDate, onDateSelected = () => undefined } = props
+
   const {
     currentYear,
     currentMonth,
     calendarWeeks,
     handleNextMonth,
     handlePreviousMonth,
+    handleSelectedDate,
   } = useCalendarContext()
 
   const shortWeekDays = getWeekDays({ short: true })
-
-  console.log(calendarWeeks)
 
   return (
     <CalendarContainer>
@@ -54,17 +55,26 @@ export function CalendarTable(props: CalendarTableProps) {
           </tr>
         </thead>
         <tbody>
-          {calendarWeeks.map(({ week, days }) => (
-            <tr key={week}>
-              {days.map(({ date, disabled }) => (
-                <td key={date.toString()}>
-                  <CalendarDay disabled={disabled}>
-                    {date.get('date')}
-                  </CalendarDay>
-                </td>
-              ))}
-            </tr>
-          ))}
+          {calendarWeeks.map(({ week, days }) => {
+            return (
+              <tr key={week}>
+                {days.map(({ date, disabled }) => {
+                  return (
+                    <td key={date.toString()}>
+                      <CalendarDay
+                        onClick={() =>
+                          handleSelectedDate(date.toDate(), onDateSelected)
+                        }
+                        disabled={disabled}
+                      >
+                        {date.get('date')}
+                      </CalendarDay>
+                    </td>
+                  )
+                })}
+              </tr>
+            )
+          })}
         </tbody>
       </CalendarBody>
     </CalendarContainer>

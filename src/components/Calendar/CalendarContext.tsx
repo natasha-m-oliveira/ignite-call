@@ -127,6 +127,7 @@ export const useCalendarContext = () => {
   }
 
   return {
+    selectedDate,
     currentDate,
     currentMonth,
     currentYear,

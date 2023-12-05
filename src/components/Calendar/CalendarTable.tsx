@@ -16,13 +16,17 @@ interface CalendarTableProps {
 }
 
 export function CalendarTable(props: CalendarTableProps) {
-  const { currentDate, handleNextMonth, handlePreviousMonth } =
-    useCalendarContext()
+  const {
+    currentYear,
+    currentMonth,
+    calendarWeeks,
+    handleNextMonth,
+    handlePreviousMonth,
+  } = useCalendarContext()
 
   const shortWeekDays = getWeekDays({ short: true })
 
-  const currentMonth = currentDate.format('MMMM')
-  const currentYear = currentDate.format('YYYY')
+  console.log(calendarWeeks)
 
   return (
     <CalendarContainer>

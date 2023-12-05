@@ -1,5 +1,5 @@
 import dayjs, { Dayjs } from 'dayjs'
-import { ReactNode, createContext, useContext, useState } from 'react'
+import { ReactNode, createContext, useContext, useMemo, useState } from 'react'
 
 interface CalendarContextProps {
   selectedDate: Date | null
@@ -38,6 +38,25 @@ export const useCalendarContext = () => {
 
   const isDateSelected = !!selectedDate
 
+  const currentMonth = currentDate.format('MMMM')
+  const currentYear = currentDate.format('YYYY')
+
+  const calendarWeeks = useMemo(() => {
+    const daysInMonthArray = Array.from({
+      length: currentDate.daysInMonth(),
+    }).map((_, i) => currentDate.set('date', i + 1))
+
+    const firstWeekDay = currentDate.get('day')
+
+    const previousMonthFillArray = Array.from({
+      length: firstWeekDay,
+    })
+      .map((_, i) => currentDate.subtract(i + 1, 'day'))
+      .reverse()
+
+    return [...previousMonthFillArray, ...daysInMonthArray]
+  }, [currentDate])
+
   function handlePreviousMonth() {
     const previousMonth = currentDate.subtract(1, 'month')
 
@@ -52,6 +71,9 @@ export const useCalendarContext = () => {
 
   return {
     currentDate,
+    currentMonth,
+    currentYear,
+    calendarWeeks,
     isDateSelected,
     handlePreviousMonth,
     handleNextMonth,

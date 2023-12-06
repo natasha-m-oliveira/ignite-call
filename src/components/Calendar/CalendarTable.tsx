@@ -12,6 +12,7 @@ import { useCalendarContext } from './CalendarContext'
 
 interface CalendarTableProps {
   selectedDate?: Date | null
+  blockedDates?: Date[]
   onDateSelected?: (date: Date | null) => void
 }
 

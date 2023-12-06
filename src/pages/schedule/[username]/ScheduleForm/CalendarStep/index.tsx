@@ -10,6 +10,11 @@ interface Availability {
   availableTimes: number[]
 }
 
+interface BlockedDays {
+  blockedWeekDays: number[]
+  blockedDates: number[]
+}
+
 export function CalendarStep() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
 
@@ -32,6 +37,20 @@ export function CalendarStep() {
     },
     enabled: !!selectedDate,
   })
+
+  // const { data:  blockedDays} = useQuery<BlockedDays>({
+  //   queryKey: ['blocked-dates', selectedDateWithoutTime],
+  //   queryFn: async () => {
+  //     const response = await api.get(`/users/${username}/blocked-dates`, {
+  //       params: {
+  //         date: selectedDateWithoutTime,
+  //       },
+  //     })
+
+  //     return response.data
+  //   },
+  //   enabled: !!selectedDate,
+  // })
 
   return (
     <Calendar.Root>

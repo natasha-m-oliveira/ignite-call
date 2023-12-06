@@ -1,5 +1,6 @@
 import { Box, styled } from '@ignite-ui/react'
 import { TimePicker } from './CalendarTimePicker.styles'
+import { fadeInRight, fadeOutRight } from '@/styles/global'
 
 export const Container = styled(Box, {
   margin: '$6 auto 0',
@@ -8,20 +9,26 @@ export const Container = styled(Box, {
   maxWidth: '100%',
   position: 'relative',
 
-  '&:has([data-state="open"]):focus-within': {
+  transition: '1s',
+
+  '&:has(input[type="radio"]:checked)': {
     gridTemplateColumns: '1fr 280px',
 
+    [`${TimePicker}`]: {
+      animation: `${fadeInRight} 1s both`,
+    },
+
     '@media(max-width: 900px)': {
-      gridTemplateColumns: '1fr',
+      gridTemplateColumns: '1fr 0px',
     },
   },
 
-  '&:has([data-state="closed"]), &:not(:focus-within)': {
+  '&:not(:has(input[type="radio"]:checked))': {
     maxWidth: 540,
-    gridTemplateColumns: '1fr',
-  },
+    gridTemplateColumns: '1fr 0px',
 
-  [`&:not(:focus-within) ${TimePicker}`]: {
-    display: 'none',
+    [`${TimePicker}`]: {
+      display: 'none',
+    },
   },
 })

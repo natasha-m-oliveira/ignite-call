@@ -16,7 +16,7 @@ interface CalendarTableProps {
 }
 
 export function CalendarTable(props: CalendarTableProps) {
-  const { selectedDate, onDateSelected = () => undefined } = props
+  const { onDateSelected = () => undefined } = props
 
   const {
     currentYear,
@@ -24,7 +24,6 @@ export function CalendarTable(props: CalendarTableProps) {
     calendarWeeks,
     handleNextMonth,
     handlePreviousMonth,
-    handleSelectedDate,
   } = useCalendarContext()
 
   const shortWeekDays = getWeekDays({ short: true })
@@ -61,12 +60,13 @@ export function CalendarTable(props: CalendarTableProps) {
                 {days.map(({ date, disabled }) => {
                   return (
                     <td key={date.toString()}>
-                      <CalendarDay
-                        onClick={() =>
-                          handleSelectedDate(date.toDate(), onDateSelected)
-                        }
-                        disabled={disabled}
-                      >
+                      <CalendarDay>
+                        <input
+                          type="radio"
+                          name="calendar-date"
+                          disabled={disabled}
+                          onClick={() => onDateSelected(date.toDate())}
+                        />
                         {date.get('date')}
                       </CalendarDay>
                     </td>

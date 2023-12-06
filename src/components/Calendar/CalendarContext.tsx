@@ -2,8 +2,6 @@ import dayjs, { Dayjs } from 'dayjs'
 import { ReactNode, createContext, useContext, useMemo, useState } from 'react'
 
 interface CalendarContextProps {
-  selectedDate: Date | null
-  setSelectedDate: (value: Date | null) => void
   currentDate: Dayjs
   setCurrentDate: (value: Dayjs) => void
 }
@@ -21,7 +19,6 @@ const DEFAULT_VALUE = {} as CalendarContextProps
 const CalendarContext = createContext<CalendarContextProps>(DEFAULT_VALUE)
 
 export const CalendarContextProvider = (props: { children: ReactNode }) => {
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const [currentDate, setCurrentDate] = useState(() => {
     return dayjs().set('date', 1)
   })
@@ -29,8 +26,6 @@ export const CalendarContextProvider = (props: { children: ReactNode }) => {
   return (
     <CalendarContext.Provider
       value={{
-        selectedDate,
-        setSelectedDate,
         currentDate,
         setCurrentDate,
       }}
@@ -95,10 +90,7 @@ export const useCalendarWeeks = (date: Dayjs) => {
 }
 
 export const useCalendarContext = () => {
-  const { selectedDate, setSelectedDate, currentDate, setCurrentDate } =
-    useContext(CalendarContext)
-
-  const isDateSelected = !!selectedDate
+  const { currentDate, setCurrentDate } = useContext(CalendarContext)
 
   const currentMonth = currentDate?.format('MMMM')
   const currentYear = currentDate?.format('YYYY')
@@ -117,24 +109,12 @@ export const useCalendarContext = () => {
     setCurrentDate(nextMonth)
   }
 
-  function handleSelectedDate(
-    date: Date | null,
-    callback?: (date: Date | null) => void,
-  ) {
-    setSelectedDate(date)
-
-    if (callback) callback(date)
-  }
-
   return {
-    selectedDate,
     currentDate,
     currentMonth,
     currentYear,
     calendarWeeks,
-    isDateSelected,
     handlePreviousMonth,
     handleNextMonth,
-    handleSelectedDate,
   }
 }

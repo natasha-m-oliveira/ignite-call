@@ -1,15 +1,15 @@
 export function getTimeSlots(
-  startHour: number,
-  endHour: number,
-  intervalInHours: number,
+  startTime: number,
+  endTime: number,
+  interval: number,
 ): number[] {
   const times: number[] = []
 
-  let currentHour = startHour
-  while (currentHour <= endHour) {
-    times.push(currentHour)
+  let currentTime = startTime
+  while (currentTime < endTime) {
+    times.push(currentTime)
 
-    currentHour += intervalInHours
+    currentTime += interval
   }
 
   return times

@@ -37,11 +37,11 @@ export default async function handle(
   if (!userAvailability)
     return res.json({ possibleTimes: [], availableTimes: [] })
 
-  const startHour = userAvailability.time_start_in_minutes / 60
-  const endHour = userAvailability.time_end_in_minutes / 60
-  const intervalInHours = 30 / 60
+  const startTime = userAvailability.time_start_in_minutes
+  const endTime = userAvailability.time_end_in_minutes
+  const interval = 30
 
-  const possibleTimes = getTimeSlots(startHour, endHour, intervalInHours)
+  const possibleTimes = getTimeSlots(startTime, endTime, interval)
 
   const blockedTimes = await prisma.scheduling.findMany({
     select: {
@@ -50,8 +50,14 @@ export default async function handle(
     where: {
       user_id: user.id,
       date: {
-        gte: referenceDate.set('hour', startHour).toDate(),
-        lte: referenceDate.set('hour', endHour).toDate(),
+        gte: referenceDate
+          .set('hours', Math.trunc(startTime / 60))
+          .set('minutes', startTime % 60)
+          .toDate(),
+        lte: referenceDate
+          .set('hours', Math.trunc(endTime / 60))
+          .set('minutes', endTime % 60)
+          .toDate(),
       },
     },
   })
@@ -59,9 +65,9 @@ export default async function handle(
   const availableTimes = possibleTimes.filter(
     (time) =>
       !blockedTimes.some((blockedTime) => {
-        const blockedHour =
-          blockedTime.date.getHours() + blockedTime.date.getMinutes() / 60
-        return blockedHour === time
+        const blockedMinutes =
+          blockedTime.date.getHours() * 60 + blockedTime.date.getMinutes()
+        return blockedMinutes === time
       }),
   )
 

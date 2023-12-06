@@ -1,12 +1,15 @@
 import dayjs from 'dayjs'
-import { useCalendarContext } from './CalendarContext'
 import { TimePickerHeader } from './CalendarTimePickerHeader.styles'
 
-export function CalendarTimePickerHeader() {
-  const { selectedDate } = useCalendarContext()
+interface CalendarTimePickerHeaderProps {
+  date: Date | null
+}
 
-  const weekDay = selectedDate && dayjs(selectedDate).format('dddd')
-  const dayAndMonth = selectedDate && dayjs(selectedDate).format('DD[ de ]MMMM')
+export function CalendarTimePickerHeader({
+  date,
+}: CalendarTimePickerHeaderProps) {
+  const weekDay = date && dayjs(date).format('dddd')
+  const dayAndMonth = date && dayjs(date).format('DD[ de ]MMMM')
 
   return (
     <TimePickerHeader>

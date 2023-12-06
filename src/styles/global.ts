@@ -1,4 +1,4 @@
-import { globalCss } from '@ignite-ui/react'
+import { globalCss, keyframes } from '@ignite-ui/react'
 
 export const globalStyles = globalCss({
   '*': {
@@ -11,5 +11,29 @@ export const globalStyles = globalCss({
     backgroundColor: '$gray900',
     color: '$gray100',
     '-webkit-font-smoothing': 'antialiased',
+  },
+})
+
+export const fadeInRight = keyframes({
+  from: {
+    opacity: 0,
+    transform: 'translatex(10px)',
+    zIndex: '-1',
+  },
+  to: {
+    opacity: 1,
+    transform: 'translatex(0)',
+    zIndex: '0',
+  },
+})
+
+export const fadeOutRight = keyframes({
+  from: {
+    opacity: 1,
+    transform: 'translatex(0)',
+  },
+  to: {
+    opacity: 0,
+    transform: 'translatex(10px)',
   },
 })

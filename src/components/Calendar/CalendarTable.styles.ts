@@ -72,7 +72,7 @@ export const CalendarBody = styled('table', {
   },
 })
 
-export const CalendarDay = styled('button', {
+export const CalendarDay = styled('label', {
   all: 'unset',
   width: '100%',
   aspectRatio: '1/1',
@@ -81,17 +81,46 @@ export const CalendarDay = styled('button', {
   cursor: 'pointer',
   borderRadius: '$sm',
 
-  '&:disabled': {
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  flexDirection: 'column',
+
+  position: 'relative',
+
+  '> input[type="radio"]': {
+    position: 'absolute',
+    height: '1px',
+    width: '1px',
+    padding: 0,
+    margin: '-1px',
+    overflow: 'hidden',
+    clipPath: 'rect(0, 0, 0)',
+    whiteSpace: 'nowrap',
+    borderWidth: 0,
+  },
+
+  '&:has(input[type="radio"]:disabled)': {
     background: 'none',
     cursor: 'default',
     opacity: 0.4,
   },
 
-  '&:not(:disabled):hover': {
+  '&:has(input[type="radio"]:not(:disabled)):hover': {
     background: '$gray500',
   },
 
-  '&:focus': {
+  '&:has(input[type="radio"]:focus)': {
     boxShadow: '0 0 0 2px $colors$gray100',
+  },
+
+  '&:has(input[type="radio"]:checked)::before': {
+    content: '',
+    width: 4,
+    height: 4,
+    background: '$gray100',
+    borderRadius: '$full',
+    position: 'absolute',
+    bottom: '15%',
   },
 })

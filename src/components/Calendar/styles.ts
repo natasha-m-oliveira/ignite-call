@@ -1,19 +1,19 @@
 import { Text, styled } from '@ignite-ui/react'
 
-export const CalendarContainer = styled('div', {
+export const Container = styled('div', {
   display: 'flex',
   flexDirection: 'column',
   gap: '$6',
   padding: '$6',
 })
 
-export const CalendarHeader = styled('div', {
+export const Header = styled('div', {
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
 })
 
-export const CalendarTitle = styled(Text, {
+export const Title = styled(Text, {
   fontWeight: '$medium',
   textTransform: 'capitalize',
 
@@ -22,7 +22,7 @@ export const CalendarTitle = styled(Text, {
   },
 })
 
-export const CalendarActions = styled('div', {
+export const Actions = styled('div', {
   display: 'flex',
   gap: '$2',
   color: '$gray200',
@@ -48,7 +48,7 @@ export const CalendarActions = styled('div', {
   },
 })
 
-export const CalendarBody = styled('table', {
+export const Table = styled('table', {
   width: '100%',
   fontFamily: '$default',
   borderSpacing: '0.25rem',
@@ -72,7 +72,7 @@ export const CalendarBody = styled('table', {
   },
 })
 
-export const CalendarDay = styled('label', {
+export const Day = styled('label', {
   all: 'unset',
   width: '100%',
   aspectRatio: '1/1',

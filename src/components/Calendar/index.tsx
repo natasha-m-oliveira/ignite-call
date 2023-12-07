@@ -1,15 +1,17 @@
+import { CalendarActions } from './CalendarActions'
+import { CalendarHeader } from './CalendarHeader'
+import { CalendarNext } from './CalendarNext'
+import { CalendarPrev } from './CalendarPrev'
 import { CalendarRoot } from './CalendarRoot'
 import { CalendarTable } from './CalendarTable'
-import { CalendarTimePickerContent } from './CalendarTimePickContent'
-import { CalendarTimePickerItem } from './CalendarTimePickItem'
-import { CalendarTimePicker } from './CalendarTimePicker'
-import { CalendarTimePickerHeader } from './CalendarTimePickerHeader'
+import { CalendarTitle } from './CalendarTitle'
 
 export const Calendar = {
   Root: CalendarRoot,
+  Header: CalendarHeader,
+  Title: CalendarTitle,
+  Actions: CalendarActions,
+  Prev: CalendarPrev,
+  Next: CalendarNext,
   Table: CalendarTable,
-  TimePicker: CalendarTimePicker,
-  TimePickerHeader: CalendarTimePickerHeader,
-  TimePickerContent: CalendarTimePickerContent,
-  TimePickerItem: CalendarTimePickerItem,
 }

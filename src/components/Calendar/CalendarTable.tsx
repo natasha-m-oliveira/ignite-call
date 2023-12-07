@@ -1,83 +1,62 @@
-import { CaretLeft, CaretRight } from 'phosphor-react'
-import {
-  CalendarBody,
-  CalendarDay,
-  CalendarHeader,
-  CalendarActions,
-  CalendarTitle,
-  CalendarContainer,
-} from './CalendarTable.styles'
-import { getWeekDays } from '@/utils/get-week-days'
-import { useCalendarContext } from './CalendarContext'
+import { useCalendarWeeks } from '@/hooks/useCalendarWeeks'
+import { Day, Table } from './styles'
+import dayjs from 'dayjs'
 
 interface CalendarTableProps {
-  selectedDate?: Date | null
-  blockedDates?: Date[]
+  currentDate: Date
+  blockedWeekDays?: number[]
+  blockedDates?: number[]
+  weekDays: string[]
   onDateSelected?: (date: Date | null) => void
 }
 
 export function CalendarTable(props: CalendarTableProps) {
-  const { onDateSelected = () => undefined } = props
-
   const {
-    currentYear,
-    currentMonth,
-    calendarWeeks,
-    handleNextMonth,
-    handlePreviousMonth,
-  } = useCalendarContext()
+    weekDays,
+    currentDate,
+    blockedWeekDays = [],
+    blockedDates = [],
+    onDateSelected = () => undefined,
+  } = props
 
-  const shortWeekDays = getWeekDays({ short: true })
+  const calendarWeeks = useCalendarWeeks(
+    dayjs(currentDate),
+    blockedWeekDays,
+    blockedDates,
+  )
 
   return (
-    <CalendarContainer>
-      <CalendarHeader>
-        <CalendarTitle>
-          {currentMonth} <span>{currentYear}</span>
-        </CalendarTitle>
-
-        <CalendarActions>
-          <button onClick={handlePreviousMonth} title="Previous month">
-            <CaretLeft />
-          </button>
-          <button onClick={handleNextMonth} title="Next month">
-            <CaretRight />
-          </button>
-        </CalendarActions>
-      </CalendarHeader>
-
-      <CalendarBody>
-        <thead>
-          <tr>
-            {shortWeekDays.map((weekDay) => (
-              <th key={weekDay}>{weekDay}.</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {calendarWeeks.map(({ week, days }) => {
-            return (
-              <tr key={week}>
-                {days.map(({ date, disabled }) => {
-                  return (
-                    <td key={date.toString()}>
-                      <CalendarDay>
-                        <input
-                          type="radio"
-                          name="calendar-date"
-                          disabled={disabled}
-                          onClick={() => onDateSelected(date.toDate())}
-                        />
-                        {date.get('date')}
-                      </CalendarDay>
-                    </td>
-                  )
-                })}
-              </tr>
-            )
-          })}
-        </tbody>
-      </CalendarBody>
-    </CalendarContainer>
+    <Table>
+      <thead>
+        <tr>
+          {weekDays.map((weekDay) => (
+            <th key={weekDay}>{weekDay}.</th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {calendarWeeks.map(({ week, days }) => {
+          return (
+            <tr key={week}>
+              {days.map(({ date, disabled }) => {
+                return (
+                  <td key={date.toString()}>
+                    <Day>
+                      <input
+                        type="radio"
+                        name="calendar-date"
+                        disabled={disabled}
+                        onClick={() => onDateSelected(date.toDate())}
+                      />
+                      {date.get('date')}
+                    </Day>
+                  </td>
+                )
+              })}
+            </tr>
+          )
+        })}
+      </tbody>
+    </Table>
   )
 }

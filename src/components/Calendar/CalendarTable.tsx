@@ -4,8 +4,10 @@ import dayjs from 'dayjs'
 
 interface CalendarTableProps {
   currentDate: Date
-  blockedWeekDays?: number[]
-  blockedDates?: number[]
+  blockedDays?: {
+    blockedWeekDays: number[]
+    blockedDates: number[]
+  }
   weekDays: string[]
   onDateSelected?: (date: Date | null) => void
 }
@@ -14,16 +16,11 @@ export function CalendarTable(props: CalendarTableProps) {
   const {
     weekDays,
     currentDate,
-    blockedWeekDays = [],
-    blockedDates = [],
+    blockedDays,
     onDateSelected = () => undefined,
   } = props
 
-  const calendarWeeks = useCalendarWeeks(
-    dayjs(currentDate),
-    blockedWeekDays,
-    blockedDates,
-  )
+  const calendarWeeks = useCalendarWeeks(dayjs(currentDate), blockedDays)
 
   return (
     <Table>

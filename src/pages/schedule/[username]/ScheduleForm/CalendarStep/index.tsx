@@ -50,6 +50,24 @@ export function CalendarStep() {
     setCurrentDate(nextMonth)
   }
 
+  const { data: blockedDays } = useQuery<BlockedDays>({
+    queryKey: [
+      'blocked-dates',
+      currentDate.get('year'),
+      currentDate.get('month'),
+    ],
+    queryFn: async () => {
+      const response = await api.get(`/users/${username}/blocked-dates`, {
+        params: {
+          year: currentDate.get('year'),
+          month: String(currentDate.get('month') + 1).padStart(2, '0'),
+        },
+      })
+
+      return response.data
+    },
+  })
+
   const { data: availability } = useQuery<Availability>({
     queryKey: ['availability', selectedDateWithoutTime],
     queryFn: async () => {
@@ -62,24 +80,6 @@ export function CalendarStep() {
       return response.data
     },
     enabled: !!selectedDate,
-  })
-
-  const { data: blockedDays } = useQuery<BlockedDays>({
-    queryKey: [
-      'blocked-dates',
-      currentDate.get('year'),
-      currentDate.get('month'),
-    ],
-    queryFn: async () => {
-      const response = await api.get(`/users/${username}/blocked-dates`, {
-        params: {
-          year: currentDate.get('year'),
-          month: currentDate.get('month') + 1,
-        },
-      })
-
-      return response.data
-    },
   })
 
   return (
@@ -97,8 +97,7 @@ export function CalendarStep() {
         <Calendar.Table
           weekDays={shortWeekDays}
           currentDate={currentDate.toDate()}
-          blockedDates={blockedDays?.blockedDates}
-          blockedWeekDays={blockedDays?.blockedWeekDays}
+          blockedDays={blockedDays}
           onDateSelected={setSelectedDate}
         />
       </Calendar.Root>

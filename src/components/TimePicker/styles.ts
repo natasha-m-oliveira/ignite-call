@@ -4,7 +4,7 @@ export const Container = styled('div', {
   borderLeft: '1px solid $gray600',
   padding: '$6 $6 0',
   overflowY: 'scroll',
-  background: 'none',
+  background: 'inherit',
 
   position: 'absolute',
   top: 0,

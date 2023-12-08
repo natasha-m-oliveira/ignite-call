@@ -11,11 +11,15 @@ interface CalendarWeek {
 
 export const useCalendarWeeks = (
   date: dayjs.Dayjs,
-  blockedWeekDays: number[],
-  blockedDates: number[],
+  blockedDays?: {
+    blockedWeekDays: number[]
+    blockedDates: number[]
+  },
 ) => {
   const computeCalendarWeeks = () => {
-    if (!date) return []
+    if (!date || !blockedDays) return []
+
+    const { blockedDates, blockedWeekDays } = blockedDays
 
     const daysInMonthArray = Array.from({ length: date.daysInMonth() }).map(
       (_, i) => ({
@@ -67,5 +71,5 @@ export const useCalendarWeeks = (
     return calendarWeeks
   }
 
-  return useMemo(computeCalendarWeeks, [date, blockedDates, blockedWeekDays])
+  return useMemo(computeCalendarWeeks, [date, blockedDays])
 }

@@ -1,0 +1,2 @@
+export const SCHEDULING_DURATION = 30
+export const MIN_LEAD_TIME_FOR_BOOKING = 60

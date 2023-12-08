@@ -1,3 +1,4 @@
+import { MIN_LEAD_TIME_FOR_BOOKING, SCHEDULING_DURATION } from '@/config/config'
 import { prisma } from '@/lib/prisma'
 import { getTimeSlots } from '@/utils/get-time-slots'
 import dayjs from 'dayjs'
@@ -23,6 +24,7 @@ export default async function handle(
   if (!user) return res.status(404).json({ message: 'User not found.' })
 
   const referenceDate = dayjs(String(date))
+  console.log(referenceDate)
   const isPastDate = referenceDate.endOf('day').isBefore(new Date())
 
   if (isPastDate) return res.json({ possibleTimes: [], availableTimes: [] })
@@ -39,9 +41,8 @@ export default async function handle(
 
   const startTime = userAvailability.time_start_in_minutes
   const endTime = userAvailability.time_end_in_minutes
-  const interval = 30
 
-  const possibleTimes = getTimeSlots(startTime, endTime, interval)
+  const possibleTimes = getTimeSlots(startTime, endTime, SCHEDULING_DURATION)
 
   const blockedTimes = await prisma.scheduling.findMany({
     select: {
@@ -62,14 +63,20 @@ export default async function handle(
     },
   })
 
-  const availableTimes = possibleTimes.filter(
-    (time) =>
-      !blockedTimes.some((blockedTime) => {
-        const blockedMinutes =
-          blockedTime.date.getHours() * 60 + blockedTime.date.getMinutes()
-        return blockedMinutes === time
-      }),
-  )
+  const availableTimes = possibleTimes.filter((time) => {
+    const isTimeBlocked = blockedTimes.some((blockedTime) => {
+      const blockedMinutes =
+        blockedTime.date.getHours() * 60 + blockedTime.date.getMinutes()
+      return blockedMinutes === time
+    })
+
+    const isTimeInPast = referenceDate
+      .set('hours', Math.trunc(time / 60))
+      .set('minutes', time % 60)
+      .isBefore(dayjs(new Date()).add(MIN_LEAD_TIME_FOR_BOOKING, 'minutes'))
+
+    return !isTimeBlocked && !isTimeInPast
+  })
 
   return res.json({ possibleTimes, availableTimes })
 }

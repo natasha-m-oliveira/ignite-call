@@ -18,7 +18,12 @@ interface BlockedDays {
   blockedDates: number[]
 }
 
-export function CalendarStep() {
+interface CalendarStepProps {
+  onSelectDateTime?: (date: Date) => void
+}
+
+export function CalendarStep(props: CalendarStepProps) {
+  const { onSelectDateTime = () => undefined } = props
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const [currentDate, setCurrentDate] = useState(() => {
     return dayjs().set('date', 1)
@@ -37,18 +42,6 @@ export function CalendarStep() {
   const username = String(router.query.username)
 
   const selectedDateWithoutTime = dayjs(selectedDate).format('YYYY-MM-DD')
-
-  function handlePreviousMonth() {
-    const previousMonth = currentDate.subtract(1, 'month')
-
-    setCurrentDate(previousMonth)
-  }
-
-  function handleNextMonth() {
-    const nextMonth = currentDate.add(1, 'month')
-
-    setCurrentDate(nextMonth)
-  }
 
   const { data: blockedDays } = useQuery<BlockedDays>({
     queryKey: [
@@ -82,6 +75,28 @@ export function CalendarStep() {
     enabled: !!selectedDate,
   })
 
+  function handlePreviousMonth() {
+    const previousMonth = currentDate.subtract(1, 'month')
+
+    setCurrentDate(previousMonth)
+  }
+
+  function handleNextMonth() {
+    const nextMonth = currentDate.add(1, 'month')
+
+    setCurrentDate(nextMonth)
+  }
+
+  function handleSelectTime(minutes: number) {
+    const dateWithTime = dayjs(selectedDate)
+      .set('hours', Math.trunc(minutes / 60))
+      .set('minutes', minutes % 60)
+      .startOf('minutes')
+      .toDate()
+
+    onSelectDateTime(dateWithTime)
+  }
+
   return (
     <Container>
       <Calendar.Root>
@@ -114,6 +129,7 @@ export function CalendarStep() {
             return (
               <TimePicker.Item
                 key={time}
+                onClick={() => handleSelectTime(time)}
                 disabled={!availability.availableTimes.includes(time)}
               >
                 {String(hours).padStart(2, '0')}:

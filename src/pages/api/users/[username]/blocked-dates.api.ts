@@ -76,8 +76,8 @@ export default async function handle(
   if (!weekDay) return res.json({ blockedWeekDays, blockedDates })
 
   const haveTimeAvailable =
-    weekDay.time_end_in_minutes - now.get('hours') * 60 + now.get('minutes') >
-    MIN_LEAD_TIME_FOR_BOOKING
+    weekDay.time_end_in_minutes - (now.get('hours') * 60 + now.get('minutes')) >
+    MIN_LEAD_TIME_FOR_BOOKING + SCHEDULING_DURATION
 
   if (!haveTimeAvailable) blockedDates.push(now.get('date'))
 

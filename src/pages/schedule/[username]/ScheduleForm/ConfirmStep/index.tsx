@@ -47,7 +47,7 @@ export function ConfirmStep({
       name,
       email,
       observations,
-      date: dayjs(schedulingDate).subtract(60, 'minutes'),
+      date: schedulingDate,
     })
 
     onCancelConfirmation()

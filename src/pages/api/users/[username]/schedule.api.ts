@@ -1,6 +1,8 @@
 import { MIN_LEAD_TIME_FOR_BOOKING } from '@/config/config'
+import { getGoogleOAuthToken } from '@/lib/google'
 import { prisma } from '@/lib/prisma'
 import dayjs from 'dayjs'
+import { google } from 'googleapis'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { z } from 'zod'
 
@@ -64,6 +66,29 @@ export default async function handle(
       observations: observations || null,
       date: schedulingDate.toDate(),
       user_id: user.id,
+    },
+  })
+
+  const calendar = google.calendar({
+    version: 'v3',
+    auth: await getGoogleOAuthToken(user.id),
+  })
+
+  await calendar.events.insert({
+    calendarId: 'primary', // é possível escolher a agenda que o evento será criado
+    conferenceDataVersion: 0,
+    requestBody: {
+      summary: `Ignite Call: ${name}`,
+      description: observations,
+      start: {
+        dateTime: schedulingDate.format(),
+      },
+      end: {
+        dateTime: schedulingDate
+          .add(MIN_LEAD_TIME_FOR_BOOKING, 'minutes')
+          .format(),
+      },
+      attendees: [{ email, displayName: name }],
     },
   })
 

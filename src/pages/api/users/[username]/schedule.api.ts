@@ -1,4 +1,4 @@
-import { MIN_LEAD_TIME_FOR_BOOKING } from '@/config/config'
+import { MIN_LEAD_TIME_FOR_BOOKING, SCHEDULING_DURATION } from '@/config/config'
 import { getGoogleOAuthToken } from '@/lib/google'
 import { prisma } from '@/lib/prisma'
 import dayjs from 'dayjs'
@@ -9,6 +9,14 @@ import { z } from 'zod'
 const createSchedulingBodySchema = z.object({
   name: z.string().min(3),
   email: z.string().email(),
+  address: z.object({
+    zipCode: z.string(),
+    street: z.string(),
+    streetNumber: z.string(),
+    neighborhood: z.string(),
+    city: z.string(),
+    state: z.string(),
+  }),
   observations: z.string(),
   date: z
     .string()
@@ -24,9 +32,8 @@ export default async function handle(
 
   const username = String(req.query.username)
 
-  const { name, email, observations, date } = createSchedulingBodySchema.parse(
-    req.body,
-  )
+  const { name, email, observations, date, address } =
+    createSchedulingBodySchema.parse(req.body)
 
   const user = await prisma.user.findUnique({
     where: {
@@ -59,12 +66,16 @@ export default async function handle(
       .status(400)
       .json({ message: 'There is another scheduling at the same time.' })
 
+  const location = `${address.street}, ${address.streetNumber} - ${address.neighborhood}, ${address.city} - ${address.state}, ${address.zipCode}`
+
   await prisma.scheduling.create({
     data: {
       name,
       email,
-      observations: observations || null,
       date: schedulingDate.toDate(),
+      zip_code: address.zipCode,
+      street_number: address.streetNumber,
+      observations: observations || null,
       user_id: user.id,
     },
   })
@@ -80,13 +91,12 @@ export default async function handle(
     requestBody: {
       summary: `Ignite Call: ${name}`,
       description: observations,
+      location,
       start: {
         dateTime: schedulingDate.format(),
       },
       end: {
-        dateTime: schedulingDate
-          .add(MIN_LEAD_TIME_FOR_BOOKING, 'minutes')
-          .format(),
+        dateTime: schedulingDate.add(SCHEDULING_DURATION, 'minutes').format(),
       },
       attendees: [{ email, displayName: name }],
     },

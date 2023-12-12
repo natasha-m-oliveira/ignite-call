@@ -7,6 +7,7 @@ import { useRouter } from 'next/router'
 import { useState } from 'react'
 import { Container } from './styles'
 import { getWeekDays } from '@/utils/get-week-days'
+import { Address } from '..'
 
 interface Availability {
   possibleTimes: number[]
@@ -19,6 +20,7 @@ interface BlockedDays {
 }
 
 interface CalendarStepProps {
+  address?: Address | null
   onSelectDateTime?: (date: Date) => void
 }
 

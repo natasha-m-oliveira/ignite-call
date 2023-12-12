@@ -7,23 +7,27 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import dayjs from 'dayjs'
 import { useRouter } from 'next/router'
 import { api } from '@/lib/axios'
+import { Address } from '..'
 
 const confirmFormSchema = z.object({
   name: z
     .string()
     .min(3, { message: 'O nome deve conter pelo menos 3 caracteres.' }),
   email: z.string().email({ message: 'Insira um endereço de e-mail válido.' }),
+  streetNumber: z.string(),
   observations: z.string().nullable(),
 })
 
 type ConfirmFormData = z.infer<typeof confirmFormSchema>
 
 interface ConfirmStepProps {
+  address?: Address | null
   schedulingDate: Date
   onCancelConfirmation: () => void
 }
 
 export function ConfirmStep({
+  address,
   schedulingDate,
   onCancelConfirmation,
 }: ConfirmStepProps) {
@@ -37,17 +41,31 @@ export function ConfirmStep({
 
   const describedDate = dayjs(schedulingDate).format('DD[ de ]MMMM[ de ]YYYY')
   const describedTime = dayjs(schedulingDate).format('HH:mm[h]')
+  const describedAddress = address
+    ? `${address.street} - ${address.neighborhood}, ${address.city} - ${address.state}`
+    : undefined
 
   const router = useRouter()
   const username = String(router.query.username)
 
   async function handleConfirmScheduling(data: ConfirmFormData) {
-    const { name, email, observations } = data
+    if (!address) return
+
+    const { name, email, streetNumber, observations } = data
+
     await api.post(`users/${username}/schedule`, {
       name,
       email,
       observations,
       date: schedulingDate,
+      address: {
+        zipCode: address.zipCode,
+        street: address.street,
+        streetNumber,
+        neighborhood: address.neighborhood,
+        city: address.city,
+        state: address.state,
+      },
     })
 
     onCancelConfirmation()
@@ -73,7 +91,7 @@ export function ConfirmStep({
       </label>
 
       <label>
-        <Text size="sm">Endreço de e-mail</Text>
+        <Text size="sm">E-mail</Text>
         <TextInput
           type="email"
           placeholder="johndoe@example.com"
@@ -82,6 +100,20 @@ export function ConfirmStep({
         {errors.email && (
           <FormError size="sm">{errors.email.message}</FormError>
         )}
+      </label>
+
+      <label>
+        <Text size="sm">Endereço</Text>
+        <TextInput
+          placeholder="Endereço da quadra"
+          readOnly
+          value={describedAddress}
+        />
+      </label>
+
+      <label>
+        <Text size="sm">Número</Text>
+        <TextInput placeholder="Número da rua" {...register('streetNumber')} />
       </label>
 
       <label>

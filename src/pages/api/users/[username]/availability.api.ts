@@ -2,7 +2,10 @@ import { MIN_LEAD_TIME_FOR_BOOKING, SCHEDULING_DURATION } from '@/config/config'
 import { prisma } from '@/lib/prisma'
 import { getTimeSlots } from '@/utils/get-time-slots'
 import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
 import { NextApiRequest, NextApiResponse } from 'next'
+
+dayjs.extend(utc)
 
 export default async function handle(
   req: NextApiRequest,
@@ -11,9 +14,12 @@ export default async function handle(
   if (req.method !== 'GET') return res.status(405).end()
 
   const username = String(req.query.username)
-  const { date } = req.query
+  const { date, timezoneOffset } = req.query
 
-  if (!date) return res.status(400).json({ message: 'Date not provided.' })
+  if (!date || !timezoneOffset)
+    return res
+      .status(400)
+      .json({ message: 'Date or timezoneOffset not provided.' })
 
   const user = await prisma.user.findUnique({
     where: {
@@ -27,6 +33,14 @@ export default async function handle(
   const isPastDate = referenceDate.endOf('day').isBefore(new Date())
 
   if (isPastDate) return res.json({ possibleTimes: [], availableTimes: [] })
+
+  const timezoneOffsetInHours =
+    typeof timezoneOffset === 'string'
+      ? Number(timezoneOffset) / 60
+      : Number(timezoneOffset[0]) / 60
+
+  const referenceDateTimeZoneOffsetInHours =
+    referenceDate.toDate().getTimezoneOffset() / 60
 
   const userAvailability = await prisma.userTimeInterval.findFirst({
     where: {
@@ -53,10 +67,12 @@ export default async function handle(
         gte: referenceDate
           .set('hours', Math.trunc(startTime / 60))
           .set('minutes', startTime % 60)
+          .add(timezoneOffsetInHours, 'hours')
           .toDate(),
         lte: referenceDate
           .set('hours', Math.trunc(endTime / 60))
           .set('minutes', endTime % 60)
+          .add(timezoneOffsetInHours, 'hours')
           .toDate(),
       },
     },
@@ -66,13 +82,19 @@ export default async function handle(
     const isTimeBlocked = blockedTimes.some((blockedTime) => {
       const blockedMinutes =
         blockedTime.date.getHours() * 60 + blockedTime.date.getMinutes()
-      return blockedMinutes === time
+      return blockedMinutes - timezoneOffsetInHours * 60 === time
     })
 
     const isTimeInPast = referenceDate
       .set('hours', Math.trunc(time / 60))
       .set('minutes', time % 60)
-      .isBefore(dayjs(new Date()).add(MIN_LEAD_TIME_FOR_BOOKING, 'minutes'))
+      .subtract(referenceDateTimeZoneOffsetInHours, 'hours')
+      .isBefore(
+        dayjs()
+          .utc()
+          .subtract(timezoneOffsetInHours, 'hours')
+          .add(MIN_LEAD_TIME_FOR_BOOKING, 'minutes'),
+      )
 
     return !isTimeBlocked && !isTimeInPast
   })
